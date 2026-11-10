@@ -72,3 +72,6 @@ class Support extends Hero {
 
 const support = new Support(100, 100, 100, 100, 100);
 support.getHealth();
+
+
+console.log (support.health);

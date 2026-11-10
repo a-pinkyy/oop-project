@@ -1,124 +1,168 @@
 // =====================================================================
-// 01. DASAR: TIPE DATA, CLASS, OBJECT, CONSTRUCTOR, METHOD, ENCAPSULATION
-// Jalankan: npx tsx 01-dasar-class-encapsulation.ts
+//  SOAL: Mario Bros dengan OOP (TypeScript)
+// =====================================================================
+//  Mario memiliki atribut: HP, speed, positionX, positionY, invincible,
+//  currentForm. Mario dapat berubah menjadi 3 form: 'mario',
+//  'super mario', dan 'fire mario'.
+//
+//  Default: HP = 1, speed = 5, currentForm = 'mario', invincible = false,
+//           positionX = 0, positionY = 0
+//
+//  1. SuperMushroom (Jamur): Mario menjadi Super Mario, HP + 1.
+//  2. FireFlower (Bunga): Mario menjadi Fire Mario, HP + 1,
+//     dan dapat menembakkan bola api.
+//  3. SuperStar (Bintang): Mario kebal terhadap serangan.
+//  4. Diserang: HP - 1 dan kembali ke form 'mario'.
+//     Jika sedang kebal, serangan tidak berpengaruh.
+//  5. Bergerak ke kanan: positionX + speed.
+//  6. Bergerak ke kiri: positionX - speed.
+//
+//  Buat class, attribute, method, dan object.
+//  Terapkan inheritance dan polymorphism.
 // =====================================================================
 
-// ---------- 1. TIPE DATA ----------
-let title: string = "Laskar Pelangi"; // teks
-let stock: number = 5; // angka
-let isAvailable: boolean = true; // true / false
-let authors: string[] = ["Andrea Hirata", "John Doe"]; // array berisi string
-let bookStatus: "available" | "borrowed" = "available"; // union: hanya 2 nilai ini (diberi nama bookStatus karena "status" bentrok dengan bawaan browser)
+// Kerjakan Quiznya Disini
+// =====================================================================
+// 05. KUIS MARIO BROS (soal di quiz-1/quiz.ts)
+// Jalankan: npx tsx 05-mario-quiz.ts
+// =====================================================================
 
-function getName(): string {
-  return "Fathir"; // fungsi yang mengembalikan string
-}
+type MarioForm = "mario" | "super mario" | "fire mario";
 
-function getAllBooks(): (string | number | boolean)[] {
-  return ["Laskar Pelangi", "Sang Pemimpi", 1, true]; // array campuran
-}
+class Mario {
+  hp: number;
+  speed: number;
+  positionX: number;
+  positionY: number;
+  invincible: boolean;
+  currentForm: MarioForm;
 
-console.log(title, stock, isAvailable, authors, bookStatus);
-console.log(getName(), getAllBooks());
-
-// ---------- 2. CLASS, OBJECT, CONSTRUCTOR, METHOD ----------
-class Book {
-  // atribut
-  title: string;
-  authors: string[];
-  pages: number;
-  stock: number;
-
-  // constructor: jalan otomatis saat new Book(...)
-  constructor(title: string, authors: string[], pages: number, stock: number) {
-    this.title = title; // this = object yang sedang dibuat
-    this.authors = authors;
-    this.pages = pages;
-    this.stock = stock;
+  constructor(
+    hp: number = 1,
+    speed: number = 5,
+    positionX: number = 0,
+    positionY: number = 0,
+    invincible: boolean = false,
+    currentForm: MarioForm = "mario",
+  ) {
+    this.hp = hp;
+    this.speed = speed;
+    this.positionX = positionX;
+    this.positionY = positionY;
+    this.invincible = invincible;
+    this.currentForm = currentForm;
   }
 
-  // method
+ 
+  moveRight(): void {
+    this.positionX += this.speed;
+    console.log(`Mario ke kanan. positionX sekarang ${this.positionX}`);
+  }
+
+  
+  moveLeft(): void {
+    this.positionX -= this.speed;
+    console.log(`Mario ke kiri. positionX sekarang ${this.positionX}`);
+  }
+
+  // 4. diserang: HP - 1 dan kembali ke form "mario". Jika kebal, tidak berpengaruh.
+  getAttacked(): void {
+    if (this.invincible) {
+      console.log("Mario kebal! Serangan tidak berpengaruh.");
+      return;
+    }
+    this.hp -= 1;
+    this.currentForm = "mario";
+    console.log(`Mario diserang. HP sekarang ${this.hp}, form kembali ke "${this.currentForm}"`);
+    if (this.hp <= 0) {
+      console.log("Mario kalah. Game over!");
+    }
+  }
+
+  // bola api hanya bisa ditembakkan saat Fire Mario
+  shootFireball(): void {
+    if (this.currentForm !== "fire mario") {
+      console.log(`Form "${this.currentForm}" tidak bisa menembakkan bola api.`);
+      return;
+    }
+    console.log("Mario menembakkan bola api!");
+  }
+
+  // Mario mengambil item. Item sendiri yang menentukan efeknya (polymorphism).
+  collect(item: PowerUp): void {
+    item.applyTo(this);
+  }
+
   getInfo(): void {
     console.log(
-      `Title: ${this.title}, Authors: ${this.authors.join(", ")}, Pages: ${this.pages}, Stock: ${this.stock}`,
+      `Mario | HP ${this.hp} | speed ${this.speed} | posisi (${this.positionX}, ${this.positionY}) | kebal ${this.invincible} | form "${this.currentForm}"`,
     );
   }
-
-  borrow(): void {
-    if (this.stock === 0) {
-      throw new Error("Stok habis"); // tolak aksi yang tidak valid
-    }
-    this.stock--;
-  }
-
-  giveBack(): void {
-    this.stock++;
-  }
 }
 
-// object dari class Book
-const novelBook = new Book("Laskar Pelangi", ["Andrea Hirata"], 350, 5);
-novelBook.getInfo();
-novelBook.borrow();
-console.log("Stok setelah dipinjam:", novelBook.stock); // 4
-
-// ---------- 3. BENTUK SINGKAT (parameter properties) ----------
-// "public" di depan parameter = atribut dibuat dan diisi otomatis
-class BookShort {
-  constructor(
-    public title: string,
-    public stock: number,
-  ) {}
+// ---------- ITEM: abstract class + inheritance + polymorphism ----------
+abstract class PowerUp {
+  abstract applyTo(mario: Mario): void; // setiap item wajib mengisi efeknya
 }
-const b2 = new BookShort("Sang Pemimpi", 3);
-console.log(b2.title, b2.stock);
 
-// ---------- 4. ENCAPSULATION: private, getter, setter, readonly ----------
-// public    : bisa diakses dari mana saja
-// private   : hanya di dalam class itu sendiri
-// protected : di dalam class dan class turunannya
-// readonly  : nilai tidak bisa diubah setelah diisi
-class BookSafe {
-  private _stock: number = 0; // disembunyikan dari luar
-  readonly isbn: string; // tidak boleh diubah lagi
-
-  constructor(
-    public title: string,
-    isbn: string,
-  ) {
-    this.isbn = isbn;
-  }
-
-  // getter: dibaca dengan  book.stock
-  get stock(): number {
-    return this._stock;
-  }
-
-  // setter: diubah dengan  book.stock = 10  (ada validasi)
-  set stock(n: number) {
-    if (n < 0) {
-      throw new Error("Stok tidak boleh negatif");
-    }
-    this._stock = n;
+// 1. SuperMushroom: jadi Super Mario, HP + 1
+class SuperMushroom extends PowerUp {
+  applyTo(mario: Mario): void {
+    mario.currentForm = "super mario";
+    mario.hp += 1;
+    console.log(`Mario makan SuperMushroom. Form "${mario.currentForm}", HP ${mario.hp}`);
   }
 }
 
-const safe = new BookSafe("Edensor", "978-1");
-safe.stock = 10; // lewat setter
-console.log("Stok safe:", safe.stock); // lewat getter -> 10
-
-// ---------- 5. try / catch: menangkap Error ----------
-try {
-  safe.stock = -5; // ditolak setter
-} catch (e) {
-  console.log("Error:", (e as Error).message);
+// 2. FireFlower: jadi Fire Mario, HP + 1, bisa menembakkan bola api
+class FireFlower extends PowerUp {
+  applyTo(mario: Mario): void {
+    mario.currentForm = "fire mario";
+    mario.hp += 1;
+    console.log(`Mario ambil FireFlower. Form "${mario.currentForm}", HP ${mario.hp}. Bisa menembakkan bola api!`);
+  }
 }
-// safe.isbn = "999";   // ERROR: readonly tidak bisa diubah
-// safe._stock = 5;     // ERROR: private tidak bisa diakses dari luar
 
-try {
-  const kosong = new Book("Kosong", ["A"], 100, 0);
-  kosong.borrow(); // stok 0 -> Error
-} catch (e) {
-  console.log("Error:", (e as Error).message);
+// 3. SuperStar: Mario kebal
+class SuperStar extends PowerUp {
+  applyTo(mario: Mario): void {
+    mario.invincible = true;
+    console.log("Mario ambil SuperStar. Mario kebal!");
+  }
 }
+
+// ---------- PENGUJIAN ----------
+const mario = new Mario();
+mario.getInfo();
+
+console.log("\n--- bergerak ---");
+mario.moveRight(); 
+mario.moveRight(); 
+mario.moveLeft(); 
+
+console.log("\n--- form mario belum bisa tembak ---");
+mario.shootFireball();
+
+console.log("\n--- SuperMushroom ---");
+mario.collect(new SuperMushroom()); // super mario, HP 2
+mario.getAttacked(); // HP 1, form mario
+
+console.log("\n--- FireFlower ---");
+mario.collect(new FireFlower()); // fire mario, HP 2
+mario.shootFireball();
+
+console.log("\n--- SuperStar ---");
+mario.collect(new SuperStar());
+mario.getAttacked(); // tidak berpengaruh
+mario.invincible = false; // anggap efek bintang habis
+mario.getAttacked(); // HP 1, form mario
+mario.getAttacked(); // HP 0, kalah
+
+// ---------- POLYMORPHISM: semua item diperlakukan sama ----------
+console.log("\n--- polymorphism: array PowerUp ---");
+const mario2 = new Mario();
+const items: PowerUp[] = [new SuperMushroom(), new FireFlower(), new SuperStar()];
+for (const item of items) {
+  mario2.collect(item); // method sama, efek beda sesuai jenis item
+}
+mario2.getInfo();

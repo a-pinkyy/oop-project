@@ -37,7 +37,6 @@ class Mario {
   invincible: boolean;
   currentForm: MarioForm;
 
-  // nilai default sesuai soal
   constructor(
     hp: number = 1,
     speed: number = 5,
@@ -54,19 +53,18 @@ class Mario {
     this.currentForm = currentForm;
   }
 
-  // 5. bergerak ke kanan: positionX + speed
+ 
   moveRight(): void {
     this.positionX += this.speed;
     console.log(`Mario ke kanan. positionX sekarang ${this.positionX}`);
   }
 
-  // 6. bergerak ke kiri: positionX - speed
+  
   moveLeft(): void {
     this.positionX -= this.speed;
     console.log(`Mario ke kiri. positionX sekarang ${this.positionX}`);
   }
 
-  // 4. diserang: HP - 1 dan kembali ke form "mario". Jika kebal, tidak berpengaruh.
   getAttacked(): void {
     if (this.invincible) {
       console.log("Mario kebal! Serangan tidak berpengaruh.");
@@ -80,7 +78,6 @@ class Mario {
     }
   }
 
-  // bola api hanya bisa ditembakkan saat Fire Mario
   shootFireball(): void {
     if (this.currentForm !== "fire mario") {
       console.log(`Form "${this.currentForm}" tidak bisa menembakkan bola api.`);
@@ -88,8 +85,6 @@ class Mario {
     }
     console.log("Mario menembakkan bola api!");
   }
-
-  // Mario mengambil item. Item sendiri yang menentukan efeknya (polymorphism).
   collect(item: PowerUp): void {
     item.applyTo(this);
   }
@@ -101,12 +96,12 @@ class Mario {
   }
 }
 
-// ---------- ITEM: abstract class + inheritance + polymorphism ----------
+
 abstract class PowerUp {
-  abstract applyTo(mario: Mario): void; // setiap item wajib mengisi efeknya
+  abstract applyTo(mario: Mario): void; 
 }
 
-// 1. SuperMushroom: jadi Super Mario, HP + 1
+
 class SuperMushroom extends PowerUp {
   applyTo(mario: Mario): void {
     mario.currentForm = "super mario";
@@ -115,7 +110,6 @@ class SuperMushroom extends PowerUp {
   }
 }
 
-// 2. FireFlower: jadi Fire Mario, HP + 1, bisa menembakkan bola api
 class FireFlower extends PowerUp {
   applyTo(mario: Mario): void {
     mario.currentForm = "fire mario";
@@ -124,7 +118,7 @@ class FireFlower extends PowerUp {
   }
 }
 
-// 3. SuperStar: Mario kebal
+
 class SuperStar extends PowerUp {
   applyTo(mario: Mario): void {
     mario.invincible = true;
@@ -132,38 +126,36 @@ class SuperStar extends PowerUp {
   }
 }
 
-// ---------- PENGUJIAN ----------
+
 const mario = new Mario();
 mario.getInfo();
 
 console.log("\n--- bergerak ---");
-mario.moveRight(); // 5
-mario.moveRight(); // 10
-mario.moveLeft(); // 5
+mario.moveRight(); 
+mario.moveRight(); 
+mario.moveLeft(); 
 
 console.log("\n--- form mario belum bisa tembak ---");
 mario.shootFireball();
 
 console.log("\n--- SuperMushroom ---");
-mario.collect(new SuperMushroom()); // super mario, HP 2
-mario.getAttacked(); // HP 1, form mario
+mario.collect(new SuperMushroom()); 
+mario.getAttacked(); 
 
 console.log("\n--- FireFlower ---");
-mario.collect(new FireFlower()); // fire mario, HP 2
+mario.collect(new FireFlower()); 
 mario.shootFireball();
 
 console.log("\n--- SuperStar ---");
 mario.collect(new SuperStar());
-mario.getAttacked(); // tidak berpengaruh
-mario.invincible = false; // anggap efek bintang habis
-mario.getAttacked(); // HP 1, form mario
-mario.getAttacked(); // HP 0, kalah
+mario.getAttacked(); 
+mario.invincible = false; 
+mario.getAttacked(); 
+mario.getAttacked(); 
 
-// ---------- POLYMORPHISM: semua item diperlakukan sama ----------
 console.log("\n--- polymorphism: array PowerUp ---");
 const mario2 = new Mario();
 const items: PowerUp[] = [new SuperMushroom(), new FireFlower(), new SuperStar()];
 for (const item of items) {
-  mario2.collect(item); // method sama, efek beda sesuai jenis item
-}
+  mario2.collect(item); 
 mario2.getInfo();
